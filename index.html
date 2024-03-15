@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="./css/style.css" />
+  <meta charset="UTF-8">
+  <title>Nạp thẻ ArgonMC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src="https://www.google.com/recaptcha/api.js?hl=vi"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/daneden/animate.css/v3.1.0/animate.min.css">
+  <script src='https://cdn.rawgit.com/matthieua/WOW/1.0.1/dist/wow.min.js'></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/css/mdb.min.css" />
+  <link rel="stylesheet" href="https://cdn.rawgit.com/t4t5/sweetalert/v0.2.0/lib/sweet-alert.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+    integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+</head>
+
+<body>
+  <script type="text/javascript">
+    new WOW().init();
+  </script>
+  <div class="container">
+    <span class="badge badge-danger" style="margin-left:6.5%;">Nạp thẻ để ủng hộ chúng mình duy trì máy chủ nhé!!</span>
+    <div id="status"></div>
+    <div class="row" style="margin-top: 30px;">
+      <div class="col-md-5">
+        <form method="POST" action="#" id="myform">
+          <table class="table table-condensed rounded-corners">
+            <tbody>
+              <tr bgcolor="4682B4">
+                <td colspan="2" align="center">
+                  <h3 style="color:white;">« Nạp Thẻ »</h3>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="white">
+                  <label>Username:</label>
+                </td>
+                <td bgcolor="white">
+                  <input type="text" class="form-control" name="username"
+                    placeholder=" Nhập chính xác tài khoản Minecraft!!" required />
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="white">
+                  <label>Loại thẻ:</label>
+                </td>
+                <td bgcolor="white">
+                  <select class="form-control" name="card_type" required id="card_type">
+                    <option value="">Chọn loại thẻ</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="white">
+                  <label>Mệnh giá:</label>
+                </td>
+                <td bgcolor="white">
+                  <select class="form-control" name="card_amount" required id="card_amount">
+                    <option value="">Chọn mệnh giá</option>
+                  </select>
+                </td>
+              </tr>
+              <script>
+                const url = 'https://thesieutoc.net/topup/discount';
+                fetch(url, {
+                  method: 'GET',
+                  headers: {
+                    'Accept': 'application/json',
+                  },
+                }).then(response => response.json()).then(response => {
+                  console.log(response)
+                  const cardtype = document.getElementById("card_type");
+                  for (let i = 0; i < response.length; i++) {
+                    let option = document.createElement("option");
+                    option.setAttribute('value', response[i].card_type);
+                    let optionText = document.createTextNode(response[i].card_type);
+                    option.appendChild(optionText);
+                    cardtype.appendChild(option);
+                    console.log(response[i].card_type)
+                  }
+                  cardtype.addEventListener('change', () => {
+                    console.log(cardtype.value)
+                    var selected = cardtype.value;
+                    const target = document.getElementById('card_amount');
+                    removeAll(target);
+                    for (let i = 0; i < response.length; i++) {
+                      if (response[i].card_type === selected) {
+                        console.log(cardtype.value)
+                        for (let key in response[i].discount) {
+                          console.log(key + " " + response[i].discount[key] + "%")
+                          let option = document.createElement("option");
+                          option.setAttribute('value', key);
+                          let optionText = document.createTextNode(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(key) + " (" + response[i].discount[key] + "%)");
+                          option.appendChild(optionText);
+                          target.appendChild(option);
+                        }
+                      }
+                    }
+                  })
+                }).catch(error => {
+                  toastr.error(error);
+                })
+
+                function removeAll(selectBox) {
+                  while (selectBox.length > 0) {
+                    selectBox.remove(0);
+                  }
+                }
+              </script>
+              <tr>
+                <td bgcolor="white">
+                  <label>Số seri:</label>
+                </td>
+                <td bgcolor="white">
+                  <input type="text" class="form-control" name="serial" required />
+                </td>
+              </tr>
+              <tr>
+                <td bgcolor="white">
+                  <label>Mã thẻ:</label>
+                </td>
+                <td bgcolor="white">
+                  <input type="text" class="form-control" name="pin" required />
+                </td>
+              </tr>
+              <tr bgcolor="white">
+                <td colspan="2" align="center">
+                  <button type="submit" class="btn btn-success btn-block" name="submit">NẠP NGAY</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+        <button type="button" onclick="showPopup()"> TEST</button>
+        <script type="text/javascript">
+          $("#myform").submit(function (e) {
+            $("#status").html(" < img src = './images/load.gif' width = '30%' / > ");
+            e.preventDefault(); $.ajax({
+              url: "./ajax/card.php",
+              type: 'post',
+              data: $("#myform").serialize(),
+              success: function (data) {
+                $("#status").html(data);
+                document.getElementById("myform").reset();
+                $("#load_hs").load("./ajax/history.php");
+              }
+            });
+          });
+        </script>
+      </div>
+      <div class="col-md-7">
+        <h4 class="text-center"> « Tiện Ích Nạp Thẻ »</h4>
+        <div id="accordion">
+          <div class="card">
+            <div class="card-header" id="headingOne">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne"
+                  aria-expanded="true" aria-controls="collapseOne"> Lịch Sử Nạp Thẻ </button>
+              </h5>
+            </div>
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+              <div id="load_hs" class="card-body table-responsive">
+                <center>
+                  <img src='./images/load.gif' width='50%' />
+                </center>
+              </div>
+              <script>
+                $("#load_hs").load("./ajax/history.php");
+                setInterval(function () {
+                  $("#load_hs").load("./ajax/history.php");
+                }, 10000);
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+    integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+    crossorigin="anonymous"></script>
+  <div id="popup" class="popup">
+    <div class="form-container">
+      <div class="close-button" onclick="hidePopup()">&times;</div>
+      <h2>Login</h2>
+      <form method="POST" action="#" id="userName">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        <button type="submit">Check</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    function showPopup() {
+      document.getElementById("popup").classList.add("show");
+    }
+
+    function hidePopup() {
+      document.getElementById("popup").classList.remove("show");
+    }
+    $("#userName").submit(function (e) {
+      e.preventDefault(); 
+      $.ajax({
+        url: "http://localhost:8080/checkUser",
+        type: 'post',
+        data: $("#userName").serialize(),
+        success: function (data) {
+          if (data == "SUCCEED") {
+            document.getElementById("popup").classList.remove("show");
+            document.getElementById("popup2").classList.add("show");
+          }
+        }
+      });
+    })
+  </script>
+    <div id="popup2" class="popup">
+      <div class="form-container">
+        <div class="close-button" onclick="hidePopup2()">&times;</div>
+        <h2>Verify</h2>
+        <form method="POST" action="#" id="code">
+          <div class="form-group">
+            <label for="code">Enter Your Code</label>
+            <input type="text" id="code" name="code" required>
+          </div>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    <script>
+      function showPopup2() {
+        document.getElementById("popup2").classList.add("show");
+      }
+  
+      function hidePopup2() {
+        document.getElementById("popup2").classList.remove("show");
+      }
+      $("#code").submit(function (e) {
+        e.preventDefault(); 
+        $.ajax({
+          url: "http://localhost:8080/code",
+          type: 'post',
+          data: $("#code").serialize(),
+          success: function (data) {
+            toastr.info(data)
+          }
+        });
+      })
+    </script>
+</body>
+
+</html>
